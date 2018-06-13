@@ -2,10 +2,12 @@ package com.lichfaker.scaleview;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.StyleableRes;
 import android.util.AttributeSet;
@@ -18,18 +20,6 @@ import android.widget.Scroller;
  */
 public abstract class BaseScaleView extends View {
 
-    public static final int[] ATTR = {
-            R.attr.lf_scale_view_min,
-            R.attr.lf_scale_view_max,
-            R.attr.lf_scale_view_margin,
-            R.attr.lf_scale_view_height,
-    };
-
-    public static final @StyleableRes int LF_SCALE_MIN = 0;
-    public static final @StyleableRes int LF_SCALE_MAX = 1;
-    public static final @StyleableRes int LF_SCALE_MARGIN = 2;
-    public static final @StyleableRes int LF_SCALE_HEIGHT = 3;
-    public static final @StyleableRes int LF_SCALE_CURRENT = 4;
 
     protected int mMax; //最大刻度
     protected int mMin; // 最小刻度
@@ -51,6 +41,8 @@ public abstract class BaseScaleView extends View {
     protected int mMidCountScale; //中间刻度
 
     protected OnScrollListener mScrollListener;
+    private Paint paint;
+    private Rect rect;
 
     public interface OnScrollListener {
         void onScaleScroll(int scale);
@@ -79,23 +71,28 @@ public abstract class BaseScaleView extends View {
 
     protected void init(AttributeSet attrs) {
         // 获取自定义属性
-        TypedArray ta = getContext().obtainStyledAttributes(attrs, ATTR);
-        mMin = ta.getInteger(LF_SCALE_MIN, 0);
-        mMax = ta.getInteger(LF_SCALE_MAX, 200);
-        mScaleMargin = ta.getDimensionPixelOffset(LF_SCALE_MARGIN, 15);
-        mScaleHeight = ta.getDimensionPixelOffset(LF_SCALE_HEIGHT, 20);
-        ta.recycle();
+
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.ScaleViewProperty, 0, 0);
+        mMin = typedArray.getInteger(R.styleable.ScaleViewProperty_lf_scale_view_min, 0);
+        mMax = typedArray.getInteger(R.styleable.ScaleViewProperty_lf_scale_view_max, 200);
+        mScaleMargin = (typedArray.getDimensionPixelOffset(R.styleable.ScaleViewProperty_lf_scale_view_margin, 15));
+        mScaleHeight = (typedArray.getDimensionPixelOffset(R.styleable.ScaleViewProperty_lf_scale_view_height, 20));
+        typedArray.recycle();
+
 
         mScroller = new Scroller(getContext());
 
+        initPaint();
+
         initVar();
+
+        rect = new Rect();
+
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        // 画笔
-        Paint paint = new Paint();
-        paint.setColor(Color.GRAY);
+    private void initPaint() {
+        paint = new Paint();
+
         // 抗锯齿
         paint.setAntiAlias(true);
         // 设定是否使用图像抖动处理，会使绘制出来的图片颜色更加平滑和饱满，图像更加清晰
@@ -104,11 +101,18 @@ public abstract class BaseScaleView extends View {
         paint.setStyle(Paint.Style.STROKE);
         // 文字居中
         paint.setTextAlign(Paint.Align.CENTER);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        // 画笔
+        rect.set(getScrollX(), 0, getScrollX() + getWidth(), getHeight());
+        canvas.clipRect(rect);
 
         onDrawLine(canvas, paint);
-        onDrawScale(canvas, paint); //画刻度
         onDrawPointer(canvas, paint); //画指针
-
+        paint.setColor(Color.GRAY);
+        onDrawScale(canvas, paint); //画刻度
         super.onDraw(canvas);
     }
 
@@ -157,6 +161,11 @@ public abstract class BaseScaleView extends View {
         smoothScrollBy(dx, dy);
     }
 
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+    }
+
     /**
      * 设置回调监听
      *
@@ -165,4 +174,9 @@ public abstract class BaseScaleView extends View {
     public void setOnScrollListener(OnScrollListener listener) {
         this.mScrollListener = listener;
     }
+
+    public static int dpToPx(int dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
+
 }

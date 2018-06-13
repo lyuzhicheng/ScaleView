@@ -17,10 +17,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        app:lf_scale_view_max="200"
-        app:lf_scale_view_min="20"
-        app:lf_scale_view_height="8dip"
-        app:lf_scale_view_margin="5dip"
+        app:lf_scale_view_max="100"
+        app:lf_scale_view_min="0"
+        app:lf_scale_view_height="9dip"
+        app:lf_scale_view_margin="7dip"
         />
 
     <EditText
@@ -34,7 +34,7 @@
 
     <Button
         android:id="@+id/horizontalScaleValueBtn"
-        android:text="修改"
+        android:text="我是逗比成"
         style="?attr/borderlessButtonStyle"
         android:background="@color/colorPrimary"
         android:textColor="#ffffff"
