@@ -17,12 +17,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        app:lf_scale_view_max="100"
+        app:lf_scale_view_max="10000"
         app:lf_scale_view_min="0"
         app:lf_scale_view_height="9dip"
         app:lf_scale_view_margin="7dip"
         />
+    
 
+    
     <EditText
         android:id="@+id/horizontalScaleValue"
         android:layout_centerHorizontal="true"

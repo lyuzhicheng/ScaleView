@@ -1,6 +1,7 @@
 package com.lichfaker.views.scaleview;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
@@ -47,5 +48,12 @@ public class MainActivity extends AppCompatActivity {
                 mTvVerticalScale.setText("" + scale);
             }
         });
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                scaleScrollView.setCurScale(500);
+            }
+        }, 500);
+
     }
 }
